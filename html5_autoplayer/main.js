@@ -71,11 +71,10 @@ function setUp() {
 
     }
     else {
-        if (ii < 10) {
+        if (ii < 20) {
             setTimeout("setUp()", 1000)
         }
         ii++
-//         console.log("Youtube HTML5 Autoplay: HTML5 player not found")
     }
 }
 
