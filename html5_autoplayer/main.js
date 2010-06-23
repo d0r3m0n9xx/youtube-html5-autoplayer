@@ -82,7 +82,7 @@ function setUp() {
 function handleTime() {
     d = getDuration()
     c = getCurrentTime()
-    if ((d == c) && (d != "00:00") && (c != "00:00")) {
+    if ((d == c) && getAutoplay()) {
         playNextVid()
         return
     }
