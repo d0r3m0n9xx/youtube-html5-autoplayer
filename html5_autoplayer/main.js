@@ -6,9 +6,10 @@ which doesn't support autoplaying at the time of writing.
 Unfortunately, the HTML5 player doesn't have the usual JS apis available either (at least, not that I could find).
 Therefore, I had to write a simple function that infinite-loops and checks whether the duration equals the elapsed time
 ****************************************************************************************************************************/
-setTimeout("setUp()", 2000)
+setTimeout("setUp()", 500)
 var d
 var c
+var ii
 function getButVal(str) {
     var tf
     dojo.forEach(dojo.query("span.yt-uix-button-content"), function(obj) {
@@ -70,7 +71,11 @@ function setUp() {
 
     }
     else {
-        console.log("Youtube HTML5 Autoplay: HTML5 player not found")
+        if (ii < 10) {
+            setTimeout("setUp()", 1000)
+        }
+        ii++
+//         console.log("Youtube HTML5 Autoplay: HTML5 player not found")
     }
 }
 
