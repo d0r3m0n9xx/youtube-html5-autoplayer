@@ -6,7 +6,7 @@ which doesn't support autoplaying at the time of writing.
 Unfortunately, the HTML5 player doesn't have the usual JS apis available either (at least, not that I could find).
 Therefore, I had to write a simple function that infinite-loops and checks whether the duration equals the elapsed time
 ****************************************************************************************************************************/
-setTimeout("setUp()", 500)
+setTimeout("setUp()", 100)
 var d
 var c
 var ii
@@ -72,7 +72,7 @@ function setUp() {
     }
     else {
         if (ii < 20) {
-            setTimeout("setUp()", 1000)
+            setTimeout("setUp()", 500)
         }
         ii++
     }
