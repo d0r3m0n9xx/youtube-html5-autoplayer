@@ -6,7 +6,7 @@ which doesn't support autoplaying at the time of writing.
 Unfortunately, the HTML5 player doesn't have the usual JS apis available either (at least, not that I could find).
 Therefore, I had to write a simple function that infinite-loops and checks whether the duration equals the elapsed time
 ****************************************************************************************************************************/
-setTimeout("setUp()", 200)
+setTimeout("setUp()", 2000)
 var d
 var c
 function getButVal(str) {
@@ -59,6 +59,7 @@ function testTime() {
 function setUp() {
     var player = dojo.query("div video")[0]
     if (player) {
+        insertPlayNext()
         var time = getDuration()
         if (time == "00:00") {
             testTime()
@@ -66,7 +67,6 @@ function setUp() {
         else  {
             handleTime()
         }
-        insertPlayNext()
 
     }
     else {
