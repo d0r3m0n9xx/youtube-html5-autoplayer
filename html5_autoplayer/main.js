@@ -48,12 +48,20 @@ function insertPlayNext()  {
     td.parentNode.insertBefore(ntd, v)
     dojo.connect(n, "onclick", playNextVid)
 }
+function testTime() {
+    if (getDuration() != "00:00") {
+        handleTime()
+    }
+    else {
+        setTimeout("testTime()", 1000)
+    }
+}
 function setUp() {
     var player = dojo.query("div video")[0]
     if (player) {
         var time = getDuration()
         if (time == "00:00") {
-            setTimeout("handleTime()",7000)
+            testTime()
         }
         else  {
             handleTime()
