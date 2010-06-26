@@ -9,7 +9,7 @@ Therefore, I had to write a simple function that infinite-loops and checks wheth
 setTimeout("setUp()", 100)
 var d
 var c
-var ii
+var ii = 0
 function getButVal(str) {
     var tf
     dojo.forEach(dojo.query("span.yt-uix-button-content"), function(obj) {
