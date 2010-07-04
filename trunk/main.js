@@ -54,7 +54,7 @@ function testTime() {
         handleTime()
     }
     else {
-        setTimeout("testTime()", 1500)
+        setTimeout("testTime()", 1000)
     }
 }
 function setUp() {
