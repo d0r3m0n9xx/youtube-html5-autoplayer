@@ -78,7 +78,7 @@ function setUp() {
     }
     else {
 //         console.log("Player _not_ found.  Loop: " + ii)
-        if (ii < 20) {
+        if (ii < 60) {
             setTimeout("setUp()", 500)
         }
         ii++
