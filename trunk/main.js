@@ -48,37 +48,30 @@ function insertPlayNext()  {
     ntd.appendChild(n)
     td.parentNode.insertBefore(ntd, v)
     dojo.connect(n, "onclick", playNextVid)
-//    console.log("Button inserted")
 }
 function testTime() {
     if (getDuration() != "00:00") {
         handleTime()
     }
     else {
-        setTimeout("testTime()", 1500)
+        setTimeout("testTime()", 1000)
     }
 }
 function setUp() {
-//     console.log("SetUp called")
     var player = dojo.query("div video")[0]
     if (player) {
-//         console.log("Player found")
         insertPlayNext()
         var time = getDuration()
-//         console.log("Time = " + time)
         if (time == "00:00") {
-//             console.log("Time = 00:00")
             testTime()
         }
         else  {
-//             console.log("Calling handle time")
             handleTime()
         }
 
     }
     else {
-//         console.log("Player _not_ found.  Loop: " + ii)
-        if (ii < 60) {
+        if (ii < 20) {
             setTimeout("setUp()", 500)
         }
         ii++
@@ -87,13 +80,9 @@ function setUp() {
 
 
 function handleTime() {
-//     console.log("handleTime called")
     d = getDuration()
     c = getCurrentTime()
-//     console.log("Duration: " + d)
-//     console.log("Current time: " + c)
     if ((d == c) && getAutoplay()) {
-//         console.log("Equal...calling playnextvid")
         playNextVid()
         return
     }
@@ -104,21 +93,17 @@ function getShuffleStatus() {
 }
 function playNextVid(e) {
     if ((!getAutoplay()) && (!e)) {
-//         console.log("NOT CONTINUING")
         return
     }
     try {
         var newPage
         if (getShuffleStatus()) {
-//             console.log("Shuffle is _on_")
             newPage = dojo.query("ul[class~='shuffle-next-video'] li a")[0].href
         }
         else {
-// //             console.log("Shuffle _not_ on")
             newPage = dojo.query("ul[class~='serial-next-video'] li a")[0].href
         }
         if (getAutoplay()) {
-//             console.log("Autoplay is on!")
             //Make sure autoplay is turned on -- we might be firing from the click of the Play Next button
             newPage = newPage + "&playnext=1"
         }
@@ -128,8 +113,7 @@ function playNextVid(e) {
         location.href = newPage
     }
     catch (e) {
-        console.error("Youtube HTML5 Autoplayer: Failed to change videos")
-        console.error("Error was: " + e)
+        console.log("Youtube HTML5 Autoplayer: Failed to change videos.")
     }
 }
 function getDuration() {
