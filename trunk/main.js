@@ -1,5 +1,5 @@
 /****************************************************************************************************************************
-YouTube HTML5 Autoplayer -- By JordonWii (jordonwii@gmail.com)
+YouTube HTML5 Autoplayer -- By Wiiboy (jordonwii@gmail.com)
 Implements basic autoplaying of playlists on YouTube with HTML5 player,
 which doesn't support autoplaying at the time of writing. 
 
@@ -9,22 +9,23 @@ Therefore, I had to write a simple function that infinite-loops and checks wheth
 setTimeout("setUp()", 100)
 var d
 var c
-var BUTTON_ON = "-59px -142px"
 var ii = 0
-function getButVal(i, pos) {
-    var style = window.getComputedStyle(dojo.query("img.yt-uix-button-icon-autoplay")[i])
-    if (style.backgroundPosition == pos) {
-        return true
-    }
-    else {
-        return false
-    }
+function getButVal(str) {
+    var tf
+    dojo.forEach(dojo.query("span.yt-uix-button-content"), function(obj) {
+        if (obj.innerHTML.toString().match("^"+ str)) {
+            if (obj.innerHTML.split(" ")[1][2] == "f") {
+                tf = false
+            }
+            else {
+                tf = true
+            }
+        }
+    })
+    return tf
 }
 function getAutoplay() {
-    return getButVal(0, BUTTON_ON)
-}
-function getShuffleStatus() {
-    return getButVal(1, BUTTON_ON)
+    return getButVal("Autoplay")
 }
 function insertPlayNext()  {
     var p = (dojo.query("button.pause-button") || dojo.query("button.play-button"))[0]
@@ -47,37 +48,30 @@ function insertPlayNext()  {
     ntd.appendChild(n)
     td.parentNode.insertBefore(ntd, v)
     dojo.connect(n, "onclick", playNextVid)
-//    console.log("Button inserted")
 }
 function testTime() {
     if (getDuration() != "00:00") {
         handleTime()
     }
     else {
-        setTimeout("testTime()", 1500)
+        setTimeout("testTime()", 1000)
     }
 }
 function setUp() {
-//     console.log("SetUp called")
     var player = dojo.query("div video")[0]
     if (player) {
-//         console.log("Player found")
         insertPlayNext()
         var time = getDuration()
-//         console.log("Time = " + time)
         if (time == "00:00") {
-//             console.log("Time = 00:00")
             testTime()
         }
         else  {
-//             console.log("Calling handle time")
             handleTime()
         }
 
     }
     else {
-//         console.log("Player _not_ found.  Loop: " + ii)
-        if (ii < 60) {
+        if (ii < 20) {
             setTimeout("setUp()", 500)
         }
         ii++
@@ -86,36 +80,30 @@ function setUp() {
 
 
 function handleTime() {
-//     console.log("handleTime called")
     d = getDuration()
     c = getCurrentTime()
-//     console.log("Duration: " + d)
-//     console.log("Current time: " + c)
     if ((d == c) && getAutoplay()) {
-//         console.log("Equal...calling playnextvid")
         playNextVid()
         return
     }
     setTimeout("handleTime()", 500)
 }
-
+function getShuffleStatus() {
+    return getButVal("Shuffle")
+}
 function playNextVid(e) {
     if ((!getAutoplay()) && (!e)) {
-//         console.log("NOT CONTINUING")
         return
     }
     try {
         var newPage
         if (getShuffleStatus()) {
-//             console.log("Shuffle is _on_")
             newPage = dojo.query("ul[class~='shuffle-next-video'] li a")[0].href
         }
         else {
-// //             console.log("Shuffle _not_ on")
             newPage = dojo.query("ul[class~='serial-next-video'] li a")[0].href
         }
         if (getAutoplay()) {
-//             console.log("Autoplay is on!")
             //Make sure autoplay is turned on -- we might be firing from the click of the Play Next button
             newPage = newPage + "&playnext=1"
         }
@@ -125,8 +113,7 @@ function playNextVid(e) {
         location.href = newPage
     }
     catch (e) {
-        console.error("Youtube HTML5 Autoplayer: Failed to change videos")
-        console.error("Error was: " + e)
+        console.log("Youtube HTML5 Autoplayer: Failed to change videos.")
     }
 }
 function getDuration() {
