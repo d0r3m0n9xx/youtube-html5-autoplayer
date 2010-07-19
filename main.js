@@ -9,23 +9,22 @@ Therefore, I had to write a simple function that infinite-loops and checks wheth
 setTimeout("setUp()", 100)
 var d
 var c
+var BUTTON_ON = "-59px -142px"
 var ii = 0
-function getButVal(str) {
-    var tf
-    dojo.forEach(dojo.query("span.yt-uix-button-content"), function(obj) {
-        if (obj.innerHTML.toString().match("^"+ str)) {
-            if (obj.innerHTML.split(" ")[1][2] == "f") {
-                tf = false
-            }
-            else {
-                tf = true
-            }
-        }
-    })
-    return tf
+function getButVal(i, pos) {
+    var style = window.getComputedStyle(dojo.query("img.yt-uix-button-icon-autoplay")[i])
+    if (style.backgroundPosition == pos) {
+        return true
+    }
+    else {
+        return false
+    }
 }
 function getAutoplay() {
-    return getButVal("Autoplay")
+    return getButVal(0, BUTTON_ON)
+}
+function getShuffleStatus() {
+    return getButVal(1, BUTTON_ON)
 }
 function insertPlayNext()  {
     var p = (dojo.query("button.pause-button") || dojo.query("button.play-button"))[0]
@@ -99,9 +98,7 @@ function handleTime() {
     }
     setTimeout("handleTime()", 500)
 }
-function getShuffleStatus() {
-    return getButVal("Shuffle")
-}
+
 function playNextVid(e) {
     if ((!getAutoplay()) && (!e)) {
 //         console.log("NOT CONTINUING")
