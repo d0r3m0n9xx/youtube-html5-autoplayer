@@ -22,6 +22,8 @@ var ajaxParams = {
     action_get_playlist:1,
     style:"bottomfeedr"
 }
+var requestComplete = false
+var requestStarted =  true
 function isNewVersion() {
     var s = window.getComputedStyle(dojo.query(".yt-uix-button-icon-quicklist-autoplay")[0])
     if (s.backgroundPosition == "-100px -100px" || s.backgroundPosition == "-79px -100px") {
@@ -83,6 +85,7 @@ function testTime() {
         setTimeout("testTime()", 1500)
     }
 }
+
 function setUp() {
 //     console.log("SetUp called")
     var player = dojo.query("div video")[0]
@@ -91,6 +94,7 @@ function setUp() {
         insertPlayNext()
         if (isNewVersion()) {
             window.BUTTON_ON = NEW_BUTTON_ON
+            insertVideoList()
         }
         var time = getDuration()
 //         console.log("Time = " + time)
@@ -128,25 +132,33 @@ function handleTime() {
     setTimeout("handleTime()", 500)
 }
 function insertVideoList() {
+    var requestStarted = true
     chrome.extension.sendRequest({
         url:ajaxURL,
         params:ajaxParams
     }, function(response) {
-            alert(response)
-            dojo.query(".quicklist-tray-active")[0].innerHTML = response
+            window.requestStarted = true
+            window.requestComplete = true
+            dojo.byId("quicklist-tray-active").innerHTML = response.playlistInfo
     })
+    return "success"
+}
+function getNodeURL() {
+    var playNode = dojo.query("li.quicklist-item-playing")[0]
+    if (playNode && playNode != undefined) {
+        return playNode.nextSibling.nextSibling.firstChild.href
+    }
+    else {
+        return false
+    }
 }
 function getNextVideoURL() {
     //Only for the _new_ version
-    var playNode = dojo.query("li.quicklist-item-playing")[0]
-    if (playNode) {
-        alert("VOIF")
-        var newPage = playNode[0].nextSibling.nextSibling.firstChild.href
+    url = getNodeURL()
+    if (url) {
+        return url
     }
-    else  {
-        insertVideoList()
-//         getNextVideoURL()
-    }
+
 }
 function playNextVid(e) {
     if ((!getAutoplay()) && (!e)) {
