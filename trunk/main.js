@@ -1,5 +1,5 @@
 /****************************************************************************************************************************
-YouTube HTML5 Autoplayer -- By JordonWii (jordonwii@gmail.com)
+YouTube HTML5 Autoplayer -- By Jordon Wii (jordonwii@gmail.com)
 Implements basic autoplaying of playlists on YouTube with HTML5 player,
 which doesn't support autoplaying at the time of writing. 
 
