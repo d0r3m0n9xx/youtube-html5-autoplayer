@@ -65,7 +65,7 @@ function insertPlayNext()  {
     td.parentNode.insertBefore(ntd, v)
     dojo.connect(n, "onclick", playNextVid)
 
-   console.log("Button inserted")
+//    console.log("Button inserted")
 }
 function testTime() {
     if (getDuration() != "00:00") {
@@ -76,28 +76,28 @@ function testTime() {
     }
 }
 function setUp() {
-    console.log("SetUp called")
+//     console.log("SetUp called")
     var player = dojo.query("div video")[0]
     if (player) {
-        console.log("Player found")
+//         console.log("Player found")
         insertPlayNext()
         if (isNewVersion()) {
             window.BUTTON_ON = NEW_BUTTON_ON
         }
         var time = getDuration()
-        console.log("Time = " + time)
+//         console.log("Time = " + time)
         if (time == "00:00") {
-            console.log("Time = 00:00")
+//             console.log("Time = 00:00")
             testTime()
         }
         else  {
-            console.log("Calling handle time")
+//             console.log("Calling handle time")
             handleTime()
         }
 
     }
     else {
-        console.log("Player _not_ found.  Loop: " + ii)
+//         console.log("Player _not_ found.  Loop: " + ii)
         if (ii < 60) {
             setTimeout("setUp()", 500)
         }
@@ -107,13 +107,13 @@ function setUp() {
 
 
 function handleTime() {
-    console.log("handleTime called")
+//     console.log("handleTime called")
     d = getDuration()
     c = getCurrentTime()
 //     console.log("Duration: " + d)
 //     console.log("Current time: " + c)
     if ((d == c) && getAutoplay()) {
-        console.log("Equal...calling playnextvid")
+//         console.log("Equal...calling playnextvid")
         playNextVid("this is a fake e")
         return
     }
@@ -122,13 +122,13 @@ function handleTime() {
 
 function playNextVid(e) {
     if ((!getAutoplay()) && (!e)) {
-        console.log("NOT CONTINUING")
+//         console.log("NOT CONTINUING")
         return
     }
     try {
         var newPage
         if (getShuffleStatus()) {
-            console.log("Shuffle is _on_")
+//             console.log("Shuffle is _on_")
             newPage = dojo.query("ul[class~='shuffle-next-video'] li a")[0].href
         }
         else {
@@ -141,7 +141,7 @@ function playNextVid(e) {
             }
         }
         if (getAutoplay()) {
-            console.log("Autoplay is on!")
+//             console.log("Autoplay is on!")
 //             Make sure autoplay is turned on -- we might be firing from the click of the Play Next button
             if (e) {
                 newPage = newPage + "&playnext=1"
