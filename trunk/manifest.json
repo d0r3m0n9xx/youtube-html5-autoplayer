@@ -9,6 +9,9 @@
         "all_frames":true
         }
     ],
+    "permissions":[
+        "http://www.youtube.com/*"
+    ],
     "background_page":"background.html",
     "icons":{
         "48":"icon-48.jpg",
