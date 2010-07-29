@@ -12,8 +12,16 @@ var c
 var NEW_BUTTON_ON = "-100px -100px"
 var NEW_BUTTON_OFF = "-79px -100px"
 BUTTON_ON = "-59px -142px"
-var videoIndex = dojo.queryToObject(window.location.search.slice(1))["index"]
+var params = dojo.queryToObject(window.location.search.slice(1))
 var ii = 0
+var ajaxURL = "http://www.youtube.com/list_ajax"
+var ajaxParams = {
+    p:params['p'],
+    v:params['v'],
+    index:params['index'],
+    action_get_playlist:1,
+    style:"bottomfeedr"
+}
 function isNewVersion() {
     var s = window.getComputedStyle(dojo.query(".yt-uix-button-icon-quicklist-autoplay")[0])
     if (s.backgroundPosition == "-100px -100px" || s.backgroundPosition == "-79px -100px") {
@@ -119,43 +127,58 @@ function handleTime() {
     }
     setTimeout("handleTime()", 500)
 }
-
+function insertVideoList() {
+    chrome.extension.sendRequest({
+        url:ajaxURL,
+        params:ajaxParams
+    }, function(response) {
+            alert(response)
+            dojo.query(".quicklist-tray-active")[0].innerHTML = response
+    })
+}
+function getNextVideoURL() {
+    //Only for the _new_ version
+    var playNode = dojo.query("li.quicklist-item-playing")[0]
+    if (playNode) {
+        alert("VOIF")
+        var newPage = playNode[0].nextSibling.nextSibling.firstChild.href
+    }
+    else  {
+        insertVideoList()
+//         getNextVideoURL()
+    }
+}
 function playNextVid(e) {
     if ((!getAutoplay()) && (!e)) {
 //         console.log("NOT CONTINUING")
         return
     }
-    try {
-        var newPage
-        if (getShuffleStatus()) {
+    var newPage
+    if (getShuffleStatus()) {
 //             console.log("Shuffle is _on_")
-            newPage = dojo.query("ul[class~='shuffle-next-video'] li a")[0].href
+        newPage = dojo.query("ul[class~='shuffle-next-video'] li a")[0].href
+    }
+    else {
+//             console.log("Shuffle _not_ on")
+        if (!isNewVersion()) {
+            newPage = dojo.query("ul[class~='serial-next-video'] li a")[0].href
         }
         else {
-//             console.log("Shuffle _not_ on")
-            if (!isNewVersion()) {
-                newPage = dojo.query("ul[class~='serial-next-video'] li a")[0].href
-            }
-            else {
-                newPage = dojo.query("li.quicklist-item-playing")[0].nextSibling.nextSibling.firstChild.href
-            }
+            newPage = getNextVideoURL()
         }
-        if (getAutoplay()) {
+
+    }
+    if (getAutoplay()) {
 //             console.log("Autoplay is on!")
 //             Make sure autoplay is turned on -- we might be firing from the click of the Play Next button
-            if (e) {
-                newPage = newPage + "&playnext=1"
-            }
+        if (e) {
+            newPage = newPage + "&playnext=1"
         }
-        if (getShuffleStatus()) {
-            newPage = newPage + "&shuffle=1"
-        }
-        location.href = newPage
     }
-    catch (e) {
-        console.error("Youtube HTML5 Autoplayer: Failed to change videos")
-        console.error("Error was: " + e)
+    if (getShuffleStatus()) {
+        newPage = newPage + "&shuffle=1"
     }
+    location.href = newPage
 }
 function getDuration() {
     return dojo.query("span[class='duration-time']")[0].innerHTML.toString()
