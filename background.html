@@ -1,0 +1,19 @@
+<html>
+    <head>
+        <script type="text/javascript" src="dojo.js"></script>
+        <script type="text/javascript">
+            chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
+                dojo.xhrGet({
+                    url:request.url,
+                    content:request.params,
+                    handleAs:"text",
+                    load:function(response) {
+                        sendResponse({
+                            playlistInfo:response
+                        })
+                    }
+                })
+            })
+        </script>
+    </head>
+</html>
