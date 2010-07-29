@@ -9,6 +9,7 @@
         "all_frames":true
         }
     ],
+    "background_page":"background.html",
     "icons":{
         "48":"icon-48.jpg",
         "128":"main-icon.jpg"
