@@ -73,7 +73,7 @@ function insertPlayNext()  {
     n.appendChild(b)
     ntd.appendChild(n)
     td.parentNode.insertBefore(ntd, v)
-    dojo.connect(n, "onclick", playNextVid)
+    dojo.connect(n, "onclick", "fake event!", playNextVid)
 
 //    console.log("Button inserted")
 }
@@ -126,7 +126,7 @@ function handleTime() {
 //     console.log("Current time: " + c)
     if ((d == c) && getAutoplay()) {
 //         console.log("Equal...calling playnextvid")
-        playNextVid("this is a fake e")
+        playNextVid()
         return
     }
     setTimeout("handleTime()", 500)
@@ -137,19 +137,23 @@ function insertVideoList() {
         url:ajaxURL,
         params:ajaxParams
     }, function(response) {
+
             window.requestStarted = true
             window.requestComplete = true
             dojo.byId("quicklist-tray-active").innerHTML = response.playlistInfo
     })
     return "success"
 }
+
 function getNodeURL() {
     var playNode = dojo.query("li.quicklist-item-playing")[0]
-    if (playNode && playNode != undefined) {
+    if (playNode && playNode != undefined && playNode.nextSibling.nextSibling.firstChild.href != undefined) {
+        alert(playNode.nextSibling.nextSibling.firstChild.href)
         return playNode.nextSibling.nextSibling.firstChild.href
     }
     else {
-        return false
+        return dojo.query("li.quicklist-item")[0].firstChild.href
+          
     }
 }
 function getNextVideoURL() {
@@ -160,7 +164,13 @@ function getNextVideoURL() {
     }
 
 }
-function playNextVid(e) {
+function playNextVid() {
+    if (this == "fake event!") {
+        e = true
+    }
+    else {
+        e = false
+    }
     if ((!getAutoplay()) && (!e)) {
 //         console.log("NOT CONTINUING")
         return
@@ -183,13 +193,14 @@ function playNextVid(e) {
     if (getAutoplay()) {
 //             console.log("Autoplay is on!")
 //             Make sure autoplay is turned on -- we might be firing from the click of the Play Next button
-        if (e) {
+        if (!e) {
             newPage = newPage + "&playnext=1"
         }
     }
     if (getShuffleStatus()) {
         newPage = newPage + "&shuffle=1"
     }
+
     location.href = newPage
 }
 function getDuration() {

@@ -2,7 +2,8 @@
     <head>
         <script type="text/javascript" src="dojo.js"></script>
         <script type="text/javascript">
-            chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
+
+            function sendRequest(request, sendResponse) {
                 dojo.xhrGet({
                     url:request.url,
                     content:request.params,
@@ -12,8 +13,14 @@
                             playlistInfo:response
                         })
                     },
-                    sync:true
+                    error:function(error) {
+                        setTimeout("sendRequest(request, sendResponse)", 500)
+                    },
+                    timeout:10000
                 })
+            }
+            chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
+                sendRequest(request, sendResponse)
             })
         </script>
     </head>
