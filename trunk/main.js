@@ -148,7 +148,6 @@ function insertVideoList() {
 function getNodeURL() {
     var playNode = dojo.query("li.quicklist-item-playing")[0]
     if (playNode && playNode != undefined && playNode.nextSibling.nextSibling.firstChild.href != undefined) {
-        alert(playNode.nextSibling.nextSibling.firstChild.href)
         return playNode.nextSibling.nextSibling.firstChild.href
     }
     else {
@@ -193,9 +192,7 @@ function playNextVid() {
     if (getAutoplay()) {
 //             console.log("Autoplay is on!")
 //             Make sure autoplay is turned on -- we might be firing from the click of the Play Next button
-        if (!e) {
-            newPage = newPage + "&playnext=1"
-        }
+        newPage = newPage + "&playnext=1"
     }
     if (getShuffleStatus()) {
         newPage = newPage + "&shuffle=1"
