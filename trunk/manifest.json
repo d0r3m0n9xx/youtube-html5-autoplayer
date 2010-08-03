@@ -1,6 +1,6 @@
 {
     "name": "Youtube HTML5 autoplayer",
-    "version":"3.12",
+    "version":"3.1",
     "description":"Implements autoplaying of playlists on Youtube with the HTML5 player",
     "content_scripts": [
         {
@@ -9,10 +9,6 @@
         "all_frames":true
         }
     ],
-    "permissions":[
-        "http://www.youtube.com/*"
-    ],
-    "background_page":"background.html",
     "icons":{
         "48":"icon-48.jpg",
         "128":"main-icon.jpg"
