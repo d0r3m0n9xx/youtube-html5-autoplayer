@@ -131,6 +131,13 @@ function handleTime() {
     }
     setTimeout("handleTime()", 500)
 }
+function swapImageAttrs() {
+    dojo.forEach(dojo.query(".video-thumb .img"), function(obj) {
+        node = obj.firstChild
+        node.src = node.getAttribute("thumb")
+        node.removeAttribute("thumb")
+    })
+}
 function insertVideoList() {
     var requestStarted = true
     chrome.extension.sendRequest({
@@ -141,6 +148,7 @@ function insertVideoList() {
             window.requestStarted = true
             window.requestComplete = true
             dojo.byId("quicklist-tray-active").innerHTML = response.playlistInfo
+            swapImageAttrs()
     })
     return "success"
 }
