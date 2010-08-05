@@ -39,11 +39,21 @@ function isNewVersion() {
 function getButVal(i, pos) {
     var style = window.getComputedStyle(dojo.query(".yt-uix-button-icon-quicklist-autoplay")[i])
     if (isNewVersion() == "new") {
-        if (window.getComputedStyle(dojo.query(".quicklist-autoplay-off")[0]).display == "none") {
-            return true
+        if (i == 0) {
+            if (window.getComputedStyle(dojo.query(".quicklist-autoplay-off")[0]).display == "none") {
+                return true
+            }
+            else {
+                return false
+            }
         }
-        else {
-            return false
+        else if (i == 1) {
+            if (window.getComputedStyle(dojo.query(".quicklist-shuffle-off")[0]).display == "none") {
+                return true
+            }
+            else {
+                return false
+            }
         }
     }
     else {
@@ -60,11 +70,12 @@ function getAutoplay() {
     return getButVal(0, BUTTON_ON)
 }
 function getShuffleStatus() {
-    if (isNewVersion()) {
-        return false
+    var newv = isNewVersion()
+    if (!newv || newv == "new") {
+        return getButVal(1, BUTTON_ON)
     }
     else {
-        return getButVal(1, BUTTON_ON)
+        return false
     }
 }
 function insertPlayNext()  {
@@ -197,20 +208,20 @@ function playNextVid() {
         return
     }
     var newPage
-    if (getShuffleStatus()) {
+    if (getShuffleStatus() && !isNewVersion()) {
 //             console.log("Shuffle is _on_")
-        newPage = dojo.query("ul[class~='shuffle-next-video'] li a")[0].href
+        if (!isNewVersion()) {
+            newPage = dojo.query("ul[class~='shuffle-next-video'] li a")[0].href
+        }
+    }
+//             console.log("Shuffle _not_ on")
+    if (!isNewVersion()) {
+        newPage = dojo.query("ul[class~='serial-next-video'] li a")[0].href
     }
     else {
-//             console.log("Shuffle _not_ on")
-        if (!isNewVersion()) {
-            newPage = dojo.query("ul[class~='serial-next-video'] li a")[0].href
-        }
-        else {
-            newPage = getNextVideoURL()
-        }
-
+        newPage = getNextVideoURL()
     }
+
     if (getAutoplay()) {
 //             console.log("Autoplay is on!")
 //             Make sure autoplay is turned on -- we might be firing from the click of the Play Next button
