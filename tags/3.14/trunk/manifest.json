@@ -1,0 +1,16 @@
+{
+    "name": "Youtube HTML5 autoplayer",
+    "version":"3.1",
+    "description":"Implements autoplaying of playlists on Youtube with the HTML5 player",
+    "content_scripts": [
+        {
+        "matches": ["http://www.youtube.com/watch?*feature=PlayList*"],
+        "js": ["dojo.js", "main.js"],
+        "all_frames":true
+        }
+    ],
+    "icons":{
+        "48":"icon-48.jpg",
+        "128":"main-icon.jpg"
+    }
+}
