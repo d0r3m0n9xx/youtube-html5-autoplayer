@@ -29,17 +29,31 @@ function isNewVersion() {
     if (s.backgroundPosition == "-100px -100px" || s.backgroundPosition == "-79px -100px") {
         return true
     }
+    else if (s.backgroundPosition == "-50px -116px" || s.backgroundPosition == "-50px -100px") {
+        return "new"
+    }
     else {
         return false
     }
 }
 function getButVal(i, pos) {
     var style = window.getComputedStyle(dojo.query(".yt-uix-button-icon-quicklist-autoplay")[i])
-    if (style.backgroundPosition == pos) {
-        return true
+    if (isNewVersion() == "new") {
+        if (window.getComputedStyle(dojo.query(".quicklist-autoplay-off")[0]).display == "none") {
+            return true
+        }
+        else {
+            return false
+        }
     }
     else {
-        return false
+        
+        if (style.backgroundPosition == pos) {
+            return true
+        }
+        else {
+            return false
+        }
     }
 }
 function getAutoplay() {
