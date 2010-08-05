@@ -4,6 +4,9 @@
         <script type="text/javascript">
 
             function sendRequest(request, sendResponse) {
+                if (request.shuffle) {
+                    request.params["shuffle"] = 1
+                }
                 dojo.xhrGet({
                     url:request.url,
                     content:request.params,
@@ -14,7 +17,7 @@
                         })
                     },
                     error:function(error) {
-                        setTimeout("sendRequest(request, sendResponse)", 500)
+                        setTimeout("sendRequest(request, sendResponse)", 1000)
                     },
                     timeout:10000
                 })

@@ -167,7 +167,8 @@ function insertVideoList() {
     var requestStarted = true
     chrome.extension.sendRequest({
         url:ajaxURL,
-        params:ajaxParams
+        params:ajaxParams,
+        shuffle:getShuffleStatus()
     }, function(response) {
 
             window.requestStarted = true
