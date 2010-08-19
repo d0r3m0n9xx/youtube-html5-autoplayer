@@ -36,6 +36,16 @@ function isNewVersion() {
         return false
     }
 }
+function isNewChromeVersion() {
+    //Detects whether this is the new version of the player "chrome"
+    var td = dojo.query("td.play-segment")[0]
+    if (td) {
+        return false
+    }
+    else {
+        return true
+    }
+}
 function getButVal(i, pos) {
     var style = window.getComputedStyle(dojo.query(".yt-uix-button-icon-quicklist-autoplay")[i])
     if (isNewVersion() == "new") {
@@ -79,14 +89,26 @@ function getShuffleStatus() {
     }
 }
 function insertPlayNext()  {
-    var p = (dojo.query("button.pause-button") || dojo.query("button.play-button"))[0]
-    var v = dojo.query(".volume-segment")[0]
-    var td = dojo.query("td.play-segment")[0]
-    var n = dojo.doc.createElement("button")
-    var b = dojo.doc.createElement("span")
-    var ntd = dojo.doc.createElement("td")
-    
-    b.setAttribute("class", "icon")
+    if (isNewChromeVersion()) {
+        var v = dojo.query(".html5-volume-control")[0]
+        var d = dojo.doc.createElement("div")
+        var b = dojo.doc.createElement("img")
+        b.src = "http://s.ytimg.com/yt/img/pixel-vfl73.gif"
+        b.setAttribute("class", "html5-icon")
+        
+        d.setAttribute("class", "html5-button html5-control")
+        d.appendChild(b)
+        d.style.width = "29px"
+    }
+    else  {
+        var p = (dojo.query("button.pause-button") || dojo.query("button.play-button"))[0]
+        var v = dojo.query(".volume-segment")[0]
+        var td = dojo.query("td.play-segment")[0]
+        var n = dojo.doc.createElement("button")
+        var b = dojo.doc.createElement("span")
+        var ntd = dojo.doc.createElement("td")
+        b.setAttribute("class", "icon")
+    }
     b.style.backgroundImage = "url(http://s.ytimg.com/yt/img/master-vfl171252.png)"
     b.style.backgroundPosition = "-48px -140px"
     b.style.width = "10px"
@@ -94,10 +116,16 @@ function insertPlayNext()  {
     b.style.margin = "0 auto"
     
     b.style.cursor = "pointer"
-    
-    n.appendChild(b)
-    ntd.appendChild(n)
-    td.parentNode.insertBefore(ntd, v)
+    if (isNewChromeVersion()){
+        b.style.marginLeft = "9px"
+        b.style.marginTop = "4px"
+        v.parentNode.insertBefore(d, v)
+    }
+    else {
+        n.appendChild(b)
+        ntd.appendChild(n)
+        td.parentNode.insertBefore(ntd, v)
+    }
     dojo.connect(n, "onclick", "fake event!", playNextVid)
 
 //    console.log("Button inserted")
