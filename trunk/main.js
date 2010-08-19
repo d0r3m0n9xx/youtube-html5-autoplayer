@@ -120,13 +120,14 @@ function insertPlayNext()  {
         b.style.marginLeft = "9px"
         b.style.marginTop = "4px"
         v.parentNode.insertBefore(d, v)
+        dojo.connect(d, "onclick", "fake event!", playNextVid)
     }
     else {
         n.appendChild(b)
         ntd.appendChild(n)
         td.parentNode.insertBefore(ntd, v)
+        dojo.connect(n, "onclick", "fake event!", playNextVid)
     }
-    dojo.connect(n, "onclick", "fake event!", playNextVid)
 
 //    console.log("Button inserted")
 }
