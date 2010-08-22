@@ -7,6 +7,7 @@ Unfortunately, the HTML5 player doesn't have the usual JS apis available either 
 Therefore, I had to write a simple function that infinite-loops and checks whether the duration equals the elapsed time
 ****************************************************************************************************************************/
 setTimeout("setUp()", 100)
+var video
 var d
 var c
 var NEW_BUTTON_ON = "-100px -100px"
@@ -129,41 +130,22 @@ function insertPlayNext()  {
         dojo.connect(n, "onclick", "fake event!", playNextVid)
     }
 
-//    console.log("Button inserted")
 }
-function testTime() {
-    if (getDuration() != "00:00") {
-        handleTime()
-    }
-    else {
-        setTimeout("testTime()", 1500)
-    }
-}
-
 function setUp() {
-//     console.log("SetUp called")
-    var player = dojo.query("div video")[0]
-    if (player) {
-//         console.log("Player found")
+    video = dojo.query("div video")[0]
+//     for (x in video) {console.log(x)}
+
+    if (video) {
         insertPlayNext()
         if (isNewVersion()) {
             window.BUTTON_ON = NEW_BUTTON_ON
             insertVideoList()
         }
-        var time = getDuration()
-//         console.log("Time = " + time)
-        if (time == "00:00") {
-//             console.log("Time = 00:00")
-            testTime()
-        }
-        else  {
-//             console.log("Calling handle time")
-            handleTime()
-        }
+        video.addEventListener("ended", playNextVid)
+
 
     }
     else {
-//         console.log("Player _not_ found.  Loop: " + ii)
         if (ii < 60) {
             setTimeout("setUp()", 500)
         }
@@ -171,20 +153,6 @@ function setUp() {
     }
 }
 
-
-function handleTime() {
-//     console.log("handleTime called")
-    d = getDuration()
-    c = getCurrentTime()
-//     console.log("Duration: " + d)
-//     console.log("Current time: " + c)
-    if ((d == c) && getAutoplay()) {
-//         console.log("Equal...calling playnextvid")
-        playNextVid()
-        return
-    }
-    setTimeout("handleTime()", 500)
-}
 function swapImageAttrs() {
     dojo.forEach(dojo.query(".video-thumb .img"), function(obj) {
         node = obj.firstChild
@@ -227,34 +195,38 @@ function getNextVideoURL() {
 
 }
 function playNextVid() {
+    //If 'e' is true, this is the button.  Otherwise, the video ended and we need to autoplay.
     if (this == "fake event!") {
         e = true
     }
     else {
         e = false
     }
+    
+    //If this is not the button and autoplay is off, do nothing.
     if ((!getAutoplay()) && (!e)) {
-//         console.log("NOT CONTINUING")
         return
     }
+    
+    //Looks like we're continuing.
+    //Getting the page is dependent on whether this is the old or new version of the Youtube UI.
     var newPage
-    if (getShuffleStatus() && !isNewVersion()) {
-//             console.log("Shuffle is _on_")
-        if (!isNewVersion()) {
+    if (!isNewVersion) {
+        //Old version
+        if (getShuffleStatus()) {
             newPage = dojo.query("ul[class~='shuffle-next-video'] li a")[0].href
         }
-    }
-//             console.log("Shuffle _not_ on")
-    if (!isNewVersion()) {
-        newPage = dojo.query("ul[class~='serial-next-video'] li a")[0].href
+        else {
+            newPage = dojo.query("ul[class~='serial-next-video'] li a")[0].href
+        }
     }
     else {
+        //New version
         newPage = getNextVideoURL()
     }
 
     if (getAutoplay()) {
-//             console.log("Autoplay is on!")
-//             Make sure autoplay is turned on -- we might be firing from the click of the Play Next button
+        //Make sure autoplay is turned on -- we might be firing from the click of the Play Next button
         newPage = newPage + "&playnext=1"
     }
     if (getShuffleStatus()) {
@@ -262,10 +234,4 @@ function playNextVid() {
     }
 
     location.href = newPage
-}
-function getDuration() {
-    return dojo.query("span[class='duration-time']")[0].innerHTML.toString()
-}
-function getCurrentTime() {
-    return dojo.query("span.current-time")[0].innerHTML.toString()
 }
