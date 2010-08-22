@@ -2,9 +2,6 @@
 YouTube HTML5 Autoplayer -- By Jordon Wii (jordonwii@gmail.com)
 Implements basic autoplaying of playlists on YouTube with HTML5 player,
 which doesn't support autoplaying at the time of writing. 
-
-Unfortunately, the HTML5 player doesn't have the usual JS apis available either (at least, not that I could find).
-Therefore, I had to write a simple function that infinite-loops and checks whether the duration equals the elapsed time
 ****************************************************************************************************************************/
 setTimeout("setUp()", 100)
 var video
