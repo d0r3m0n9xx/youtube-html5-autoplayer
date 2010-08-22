@@ -4,29 +4,29 @@
         <script type="text/javascript" src="dojo.js"></script>
         <script type="text/javascript">
             dojo.addOnLoad(function() {
-                var playnext = localStorage["playnext"]
-                if (playnext == undefined) {
-                    localStorage["playnext"] = "true"
+                var loop = localStorage["loop"]
+                if (loop == undefined) {
+                    localStorage["loop"] = "true"
                 }
-                else if (playnext == "false") {
-                    dojo.byId("playnext").checked = "false"
+                else if (loop == "false") {
+                    dojo.byId("loop").checked = "false"
                 }
                 dojo.connect(dojo.byId("submit"), "onclick", saveSettings)
             })
             function saveSettings() {
-                var playnext = dojo.byId("playnext")
-                if (playnext.checked) {
-                    localStorage['playnext'] = "true"
+                var loop = dojo.byId("loop")
+                if (loop.checked) {
+                    localStorage['loop'] = "true"
                 }
                 else {
-                    localStorage['playnext'] = "false"
+                    localStorage['loop'] = "false"
                 }
                 var saved = dojo.byId("status")
-                saved.innerHTML = "Saved."
-                playnext.parentNode.appendChild(saved)
+                saved.style.display = "block"
+                loop.parentNode.appendChild(saved)
                 setTimeout(function() {
-                    saved.innerHTML = ""
-                }, 1000)
+                    saved.style.display = "none"
+                }, 2000)
             }
         </script>
         <link href="options_styles.css" type="text/css" rel="stylesheet" />
@@ -34,14 +34,21 @@
     <body>
         <div id="header">
             <img src="main-icon.jpg" />
+
         </div>
-        <label for="playnext">Add a "Play next in playlist" button to videos in playlists?</label>
-        <input checked="checked" type="checkbox" id="playnext" />
-        <p>
-            <button id="submit">
-                Save
-            </button>
-        </p>
-        <div style="font-weight:bold" id="status"></div>
+        <div id="options">
+            <label for="loop">Add button for looping videos in playlists?</label>
+            <br />
+            <input checked="checked" type="checkbox" id="loop" />
+            <p>
+                <button id="submit">
+                    Save
+                </button>
+            </p>
+        </div>
+        <div id="status">
+            <img src="valid.gif" />
+            Options saved
+        </div>
     </body>
 </html>
