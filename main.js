@@ -56,11 +56,21 @@ function getButVal(i, pos) {
             }
         }
         else if (i == 1) {
-            if (window.getComputedStyle(dojo.query(".quicklist-shuffle-off")[0]).display == "none") {
-                return true
+            if (dojo.query(".quicklist-shuffle-off")[0]) {
+                if (window.getComputedStyle(dojo.query(".quicklist-shuffle-off")[0]).display == "none") {
+                    return true
+                }
+                else {
+                    return false
+                }
             }
             else {
-                return false
+                if (window.getComputedStyle(dojo.query(".yt-uix-button-icon-quicklist-shuffle")[0]).backgroundPosition == "-68px -116px") {
+                    return true
+                }
+                else {
+                    return false
+                }
             }
         }
     }
