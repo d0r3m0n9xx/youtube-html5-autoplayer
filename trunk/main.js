@@ -9,7 +9,7 @@ var d
 var c
 var NEW_BUTTON_ON = "-100px -100px"
 var NEW_BUTTON_OFF = "-79px -100px"
-BUTTON_ON = "-59px -142px"
+BUTTON_ON = "-50px -118px"
 var params = dojo.queryToObject(window.location.search.slice(1))
 var ii = 0
 var ajaxURL = "http://www.youtube.com/list_ajax"
@@ -30,6 +30,10 @@ function isNewVersion() {
     else if (s.backgroundPosition == "-50px -116px" || s.backgroundPosition == "-50px -100px") {
         return "new"
     }
+    else if (s.backgroundPosition == "-50px -116px" || s.backgroundPosition == "-70px -100px") {
+        return "newnew"
+    }
+
     else {
         return false
     }
@@ -45,7 +49,6 @@ function isNewChromeVersion() {
     }
 }
 function getButVal(i, pos) {
-    var style = window.getComputedStyle(dojo.query(".yt-uix-button-icon-quicklist-autoplay")[i])
     if (isNewVersion() == "new") {
         if (i == 0) {
             if (window.getComputedStyle(dojo.query(".quicklist-autoplay-off")[0]).display == "none") {
@@ -65,7 +68,7 @@ function getButVal(i, pos) {
                 }
             }
             else {
-                if (window.getComputedStyle(dojo.query(".yt-uix-button-icon-quicklist-shuffle")[0]).backgroundPosition == "-68px -116px") {
+                if (window.getComputedStyle(dojo.query(".yt-uix-button-icon-quicklist-shuffle")[0]).backgroundPosition == BUTTON_ON) {
                     return true
                 }
                 else {
@@ -75,6 +78,12 @@ function getButVal(i, pos) {
         }
     }
     else {
+        if (i == 0) {
+            var style = window.getComputedStyle(dojo.query(".yt-uix-button-icon-quicklist-autoplay")[0])
+        }
+        else {
+            var style = window.getComputedStyle(dojo.query(".yt-uix-button-icon-quicklist-shuffle")[0])
+        }
         
         if (style.backgroundPosition == pos) {
             return true
@@ -88,13 +97,7 @@ function getAutoplay() {
     return getButVal(0, BUTTON_ON)
 }
 function getShuffleStatus() {
-    var newv = isNewVersion()
-    if (!newv || newv == "new") {
-        return getButVal(1, BUTTON_ON)
-    }
-    else {
-        return false
-    }
+    return getButVal(1, "-70px -118px")
 }
 function insertPlayNext()  {
     if (isNewChromeVersion()) {
