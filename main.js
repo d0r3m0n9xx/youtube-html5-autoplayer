@@ -30,7 +30,7 @@ function isNewVersion() {
     else if (s.backgroundPosition == "-50px -116px" || s.backgroundPosition == "-50px -100px") {
         return "new"
     }
-    else if (s.backgroundPosition == "-50px -116px" || s.backgroundPosition == "-70px -100px") {
+    else if (s.backgroundPosition == "-50px -118px") {
         return "newnew"
     }
 
@@ -84,12 +84,21 @@ function getButVal(i, pos) {
         else {
             var style = window.getComputedStyle(dojo.query(".yt-uix-button-icon-quicklist-shuffle")[0])
         }
-        
-        if (style.backgroundPosition == pos) {
-            return true
+        if (isNewVersion() == "newnew") {
+            if (style.backgroundColor == "#666") {
+                return false
+            }
+            else {
+                return true
+            }
         }
         else {
-            return false
+            if (style.backgroundPosition == pos) {
+                return true
+            }
+            else {
+                return false
+            }
         }
     }
 }
@@ -180,7 +189,8 @@ function insertVideoList() {
 
             window.requestStarted = true
             window.requestComplete = true
-            dojo.byId("quicklist-tray-active").innerHTML = response.playlistInfo
+            dojo.byId("quicklist-tray-content").innerHTML = response.playlistInfo
+            dojo.byId("quicklist-loading").style.display = "none"
             swapImageAttrs()
     })
     return "success"
@@ -204,15 +214,8 @@ function getNextVideoURL() {
     }
 
 }
-function playNextVid() {
-    //If 'e' is true, this is the button.  Otherwise, the video ended and we need to autoplay.
-    if (this == "fake event!") {
-        e = true
-    }
-    else {
-        e = false
-    }
-    
+function playNextVid(e) {
+
     //If this is not the button and autoplay is off, do nothing.
     if ((!getAutoplay()) && (!e)) {
         return
@@ -221,8 +224,9 @@ function playNextVid() {
     //Looks like we're continuing.
     //Getting the page is dependent on whether this is the old or new version of the Youtube UI.
     var newPage
-    if (!isNewVersion) {
-        //Old version
+    if (false) {
+        //DEPRECATED
+        //OLD VERSION NO LONGER SUPPORTED
         if (getShuffleStatus()) {
             newPage = dojo.query("ul[class~='shuffle-next-video'] li a")[0].href
         }
