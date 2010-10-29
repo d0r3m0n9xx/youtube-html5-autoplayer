@@ -27,8 +27,57 @@ BUTTON_ENABLED = {
 }
             
 PlayNextButton = new Class({
-    initialize:function() {
+    initialize:function(autoplayer) {
+        this.element = document.createElement("div")
+        this.button = document.createElement("button")
+        this.previousElement = $$(".html5-volume-control")[0]
+        this.autoplayer = autoplayer
         
+        this.element.appendChild(this.button)
+        
+        this.applyStylesToElement()
+        this.applyStylesToButton()
+        
+        this.inject()
+    },
+    applyStylesToElement:function() {
+        this.element.addClass("html5-button html5-control")
+        this.element.setStyle("width", "29px")
+        this.getEnglishSupported(function() {
+            this.element.set("data-tooltip-title", "Play Next Video")
+            this.element.set("data-tooltip", "Play Next Video")
+            this.element.set("data-tooltip-timer", "5071")
+            this.element.addClass("yt-uix-tooltip")
+
+        }.bind(this))
+    },
+    getEnglishSupported:function(callback) {
+        chrome.extension.sendRequest({
+            getLang:"en-US"
+        }, function(resp) {
+            if (resp.hasLang) {
+                callback.call(this)
+            }
+        })
+    },
+        
+    applyStylesToButton:function() {
+        this.button.set("src", "http://s.ytimg.com/yt/img/pixel-vfl73.gif")
+        this.button.addClass("html5-icon")
+        this.button.setStyles({
+            backgroundImage:"url(http://s.ytimg.com/yt/img/master-vfl171252.png)",
+            backgroundPosition:"-48px -140px",
+            width:10,
+            height:16,
+            margin:"0 auto",
+            marginLeft:9,
+            marginTop:4,
+            cursor:"pointer"
+        })
+    },
+    inject:function() {
+        this.previousElement.parentNode.insertBefore(this.element, this.previousElement)
+        this.element.addEvent("click", this.autoplayer.playNextVideo.bind(this.autoplayer))
     }
 })
 YTButton = new Class({
@@ -116,7 +165,7 @@ YTQuicklist = new Class({
 AutoPlayer = new Class({
     initialize:function() {
         this.video = this.getVideo()
-        this.playNextButton = new PlayNextButton()
+        this.playNextButton = new PlayNextButton(this)
         this.quicklist = new YTQuicklist()
         this.queryString = window.location.search.substring(1).parseQueryString()
         
@@ -124,14 +173,16 @@ AutoPlayer = new Class({
         this.video.addEventListener("ended", this.handleVideoEnded.bind(this))
     },
     handleVideoEnded:function(e) {
-        
         if (this.quicklist.autoplayEnabled()) {
-            this.nextVid = this.quicklist.getNextVideo()
-            this.nextURL = this.getNextURL()
-            
-            //Redirect to the next video
-            location.href = this.nextURL
+            this.playNextVideo()
         }
+    },
+    playNextVideo:function() {
+        this.nextVid = this.quicklist.getNextVideo()
+        this.nextURL = this.getNextURL()
+        
+        //Redirect to the next video
+        location.href = this.nextURL
     },
     getNextURL:function() {
         //Assumes this.nextVid has already been defined
