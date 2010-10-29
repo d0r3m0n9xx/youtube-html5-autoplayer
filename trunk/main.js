@@ -13,19 +13,7 @@
 * This file contains v4.0 and later of this extension.  Earlier versions are in 'main-old.js'              *
 ***********************************************************************************************************/
 
-BUTTON_ENABLED = {
-    style:function(styles) {
-        console.log(styles.backgroundPosition)
-        if (styles.backgroundPosition == this.bp) {
-            return true
-        }
-        else {
-            return false
-        }
-    },
-    use:"style"
-}
-            
+          
 PlayNextButton = new Class({
     initialize:function(autoplayer) {
         this.element = document.createElement("div")
@@ -68,7 +56,7 @@ PlayNextButton = new Class({
             backgroundImage:"url(http://s.ytimg.com/yt/img/master-vfl171252.png)",
             backgroundPosition:"-48px -140px",
             width:10,
-            height:16,
+            height:20,
             margin:"0 auto",
             marginLeft:9,
             marginTop:4,
@@ -81,58 +69,44 @@ PlayNextButton = new Class({
     }
 })
 YTButton = new Class({
-    initialize:function(button) {
+    initialize:function(button, param) {
         //Button should be the actual element of the button
+        //param should be the name of the url parameter
         this.button = button
-    },
-    enabled:function(funcs) {
-        /* 
-        This is the function that is called to ascertain whether this button is on or off.
-        It is designed to be able to changed easily whenever YouTube changes their page
+        this.param = window.location.search.substring(1).parseQueryString()[param]
         
-        'funcs' should be an object.  It defaults to the global "BUTTON_ENABLED".
-        It can have any of the following 3 items, 
-            each a function that returns true if the button is on, otherwise false:
-        - class: passed the button's class(es),
-        - style: passed the return of button.getStyles,
-        - other: passed the button element itself;
-        
-        The following is required:
-        - use: the key of the function to use;
-        */
-        
-        if (!funcs) {
-            funcs = window.BUTTON_ENABLED
-        }
-        if (!funcs.use) {
-            throw "ValueError: Missing 'use' in YTButton.enabled"
-        }
-        var arg
-        if (funcs.use == "class") {
-            arg = this.button.get("class")
-        }
-        else if (funcs.use == "style") {
-            arg = window.getComputedStyle(this.button)
+        if (this.param != undefined && this.param.toInt()) {
+            this.enabled = true
         }
         else {
-            arg = this.button
+            this.enabled = false
         }
         
-        return funcs[funcs.use].call(this, arg)
-
+        this.button.addEvent("click", this.handleClick.bind(this))
+    },
+    handleClick:function(e) {
+        if (this.enabled) {
+            this.enabled = false
+        }
+        else {
+            this.enabled = true
+        }
+    },
+    isEnabled:function(funcs) {
+        return this.enabled
     }
 })
 YTAutoPlayButton = new Class({
     Extends:YTButton,
     initialize:function() {
-        this.parent($("quicklist-autoplay-button").getChildren("img")[0])
+        this.parent($("quicklist-autoplay-button").getChildren("img")[0], "playnext")
         this.bp = "-50px -118px"
     },
 })
 YTShuffleButton = new Class({
     Extends:YTButton,
     initialize:function() {
-        this.parent($("quicklist-shuffle-button").getChildren("img")[0])
+        this.parent($("quicklist-shuffle-button").getChildren("img")[0], "shuffle")
         this.bp = "-70px -118px"
 
     }
@@ -151,10 +125,10 @@ YTQuicklist = new Class({
         return dataURL.substring(dataURL.lastIndexOf("?")).parseQueryString().shuffle
     },
     shuffleEnabled:function() {
-        return this.shuffle.enabled()
+        return this.shuffle.isEnabled()
     },
     autoplayEnabled:function() {
-        return this.autoplay.enabled()
+        return this.autoplay.isEnabled()
     },
     
     getNextVideo:function() {
