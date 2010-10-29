@@ -41,7 +41,7 @@ PlayNextButton = new Class({
     },
     getEnglishSupported:function(callback) {
         chrome.extension.sendRequest({
-            getLang:"en-US"
+            getLangs:["en-US", "en-GB"]
         }, function(resp) {
             if (resp.hasLang) {
                 callback.call(this)

@@ -4,7 +4,8 @@
         <script type="text/javascript">
             chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
                 chrome.i18n.getAcceptLanguages(function(langs) {
-                    if (langs.contains(request.getLang)) {
+                    request.getLangs.each(function(lang) {
+                    if (langs.contains(lang)) {
                         sendResponse({
                             hasLang:true
                         })
