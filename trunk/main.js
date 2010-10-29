@@ -1,251 +1,157 @@
-/****************************************************************************************************************************
-YouTube HTML5 Autoplayer -- By Jordon Wii (jordonwii@gmail.com)
-Implements basic autoplaying of playlists on YouTube with HTML5 player,
-which doesn't support autoplaying at the time of writing. 
-****************************************************************************************************************************/
-setTimeout("setUp()", 100)
-var video
-var d
-var c
-var NEW_BUTTON_ON = "-100px -100px"
-var NEW_BUTTON_OFF = "-79px -100px"
-BUTTON_ON = "-50px -118px"
-var params = dojo.queryToObject(window.location.search.slice(1))
-var ii = 0
-var ajaxURL = "http://www.youtube.com/list_ajax"
-var ajaxParams = {
-    p:params['p'],
-    v:params['v'],
-    index:params['index'],
-    action_get_playlist:1,
-    style:"bottomfeedr"
-}
-var requestComplete = false
-var requestStarted =  true
-function isNewVersion() {
-    var s = window.getComputedStyle(dojo.query(".yt-uix-button-icon-quicklist-autoplay")[0])
-    if (s.backgroundPosition == "-100px -100px" || s.backgroundPosition == "-79px -100px") {
-        return true
-    }
-    else if (s.backgroundPosition == "-50px -116px" || s.backgroundPosition == "-50px -100px") {
-        return "new"
-    }
-    else if (s.backgroundPosition == "-50px -118px") {
-        return "newnew"
-    }
+/*******************************************************************************************************
+* Youtube HTML5 Autoplayer extension by JordonWii (jordonwii@gmail.com)                                    *
+* Enables autoplaying of HTML5 videos on YouTube, which is not supported at the moment.                    *
+*                                                                                                          *
+* Because YouTube has yet to expose a public API for HTML5 videos,                                         *
+* beyond the ones that HTML5 supports itself, the whole thing is something of a hack.                      *
+* I have to use the combination of various styles (e.g. backgroundColor, backgroundPosition...)            *
+* to determine which version of the player's "chrome" we are using (to inject the "Play next" button,      *
+* and also to determine whether autoplay and shuffle are on.                                               *
+*                                                                                                          *
+* Autoplaying works by grabbing the video in the playlist bar who is the next sibling of the playing video.*
+*                                                                                                          *
+* This file contains v4.0 and later of this extension.  Earlier versions are in 'main-old.js'              *
+***********************************************************************************************************/
 
-    else {
-        return false
-    }
-}
-function isNewChromeVersion() {
-    //Detects whether this is the new version of the player "chrome"
-    var td = dojo.query("td.play-segment")[0]
-    if (td) {
-        return false
-    }
-    else {
-        return true
-    }
-}
-function getButVal(i, pos) {
-    if (isNewVersion() == "new") {
-        if (i == 0) {
-            if (window.getComputedStyle(dojo.query(".quicklist-autoplay-off")[0]).display == "none") {
-                return true
-            }
-            else {
-                return false
-            }
-        }
-        else if (i == 1) {
-            if (dojo.query(".quicklist-shuffle-off")[0]) {
-                if (window.getComputedStyle(dojo.query(".quicklist-shuffle-off")[0]).display == "none") {
-                    return true
-                }
-                else {
-                    return false
-                }
-            }
-            else {
-                if (window.getComputedStyle(dojo.query(".yt-uix-button-icon-quicklist-shuffle")[0]).backgroundPosition == BUTTON_ON) {
-                    return true
-                }
-                else {
-                    return false
-                }
-            }
-        }
-    }
-    else {
-        if (i == 0) {
-            var style = window.getComputedStyle(dojo.query(".yt-uix-button-icon-quicklist-autoplay")[0])
+BUTTON_ENABLED = {
+    style:function(styles) {
+        console.log(styles.backgroundPosition)
+        if (styles.backgroundPosition == this.bp) {
+            return true
         }
         else {
-            var style = window.getComputedStyle(dojo.query(".yt-uix-button-icon-quicklist-shuffle")[0])
+            return false
         }
-        if (isNewVersion() == "newnew") {
-            if (style.backgroundColor == "#666") {
-                return false
-            }
-            else {
-                return true
-            }
-        }
-        else {
-            if (style.backgroundPosition == pos) {
-                return true
-            }
-            else {
-                return false
-            }
-        }
-    }
+    },
+    use:"style"
 }
-function getAutoplay() {
-    return getButVal(0, BUTTON_ON)
-}
-function getShuffleStatus() {
-    return getButVal(1, "-70px -118px")
-}
-function insertPlayNext()  {
-    if (isNewChromeVersion()) {
-        var v = dojo.query(".html5-volume-control")[0]
-        var d = dojo.doc.createElement("div")
-        var b = dojo.doc.createElement("img")
-        b.src = "http://s.ytimg.com/yt/img/pixel-vfl73.gif"
-        b.setAttribute("class", "html5-icon")
+            
+PlayNextButton = new Class({
+    initialize:function() {
         
-        d.setAttribute("class", "html5-button html5-control")
-        d.appendChild(b)
-        d.style.width = "29px"
     }
-    else  {
-        var p = (dojo.query("button.pause-button") || dojo.query("button.play-button"))[0]
-        var v = dojo.query(".volume-segment")[0]
-        var td = dojo.query("td.play-segment")[0]
-        var n = dojo.doc.createElement("button")
-        var b = dojo.doc.createElement("span")
-        var ntd = dojo.doc.createElement("td")
-        b.setAttribute("class", "icon")
-    }
-    b.style.backgroundImage = "url(http://s.ytimg.com/yt/img/master-vfl171252.png)"
-    b.style.backgroundPosition = "-48px -140px"
-    b.style.width = "10px"
-    b.style.height = "16px"
-    b.style.margin = "0 auto"
-    
-    b.style.cursor = "pointer"
-    if (isNewChromeVersion()){
-        b.style.marginLeft = "9px"
-        b.style.marginTop = "4px"
-        v.parentNode.insertBefore(d, v)
-        dojo.connect(d, "onclick", "fake event!", playNextVid)
-    }
-    else {
-        n.appendChild(b)
-        ntd.appendChild(n)
-        td.parentNode.insertBefore(ntd, v)
-        dojo.connect(n, "onclick", "fake event!", playNextVid)
-    }
-
-}
-function setUp() {
-    video = dojo.query("div video")[0]
-//     for (x in video) {console.log(x)}
-
-    if (video) {
-        insertPlayNext()
-        if (isNewVersion()) {
-            window.BUTTON_ON = NEW_BUTTON_ON
-            insertVideoList()
+})
+YTButton = new Class({
+    initialize:function(button) {
+        //Button should be the actual element of the button
+        this.button = button
+    },
+    enabled:function(funcs) {
+        /* 
+        This is the function that is called to ascertain whether this button is on or off.
+        It is designed to be able to changed easily whenever YouTube changes their page
+        
+        'funcs' should be an object.  It defaults to the global "BUTTON_ENABLED".
+        It can have any of the following 3 items, 
+            each a function that returns true if the button is on, otherwise false:
+        - class: passed the button's class(es),
+        - style: passed the return of button.getStyles,
+        - other: passed the button element itself;
+        
+        The following is required:
+        - use: the key of the function to use;
+        */
+        
+        if (!funcs) {
+            funcs = window.BUTTON_ENABLED
         }
-        video.addEventListener("ended", playNextVid)
-
-
-    }
-    else {
-        if (ii < 60) {
-            setTimeout("setUp()", 500)
+        if (!funcs.use) {
+            throw "ValueError: Missing 'use' in YTButton.enabled"
         }
-        ii++
-    }
-}
-
-function swapImageAttrs() {
-    dojo.forEach(dojo.query(".video-thumb .img"), function(obj) {
-        node = obj.firstChild
-        node.src = node.getAttribute("thumb")
-        node.removeAttribute("thumb")
-    })
-}
-function insertVideoList() {
-    var requestStarted = true
-    chrome.extension.sendRequest({
-        url:ajaxURL,
-        params:ajaxParams,
-        shuffle:getShuffleStatus()
-    }, function(response) {
-
-            window.requestStarted = true
-            window.requestComplete = true
-            dojo.byId("quicklist-tray-content").innerHTML = response.playlistInfo
-            dojo.byId("quicklist-loading").style.display = "none"
-            swapImageAttrs()
-    })
-    return "success"
-}
-
-function getNodeURL() {
-    var playNode = dojo.query("li.quicklist-item-playing")[0]
-    if (playNode && playNode != undefined && playNode.nextSibling.nextSibling.firstChild.href != undefined) {
-        return playNode.nextSibling.nextSibling.firstChild.href
-    }
-    else {
-        return dojo.query("li.quicklist-item")[0].firstChild.href
-          
-    }
-}
-function getNextVideoURL() {
-    //Only for the _new_ version
-    url = getNodeURL()
-    if (url) {
-        return url
-    }
-
-}
-function playNextVid(e) {
-
-    //If this is not the button and autoplay is off, do nothing.
-    if ((!getAutoplay()) && (!e)) {
-        return
-    }
-    
-    //Looks like we're continuing.
-    //Getting the page is dependent on whether this is the old or new version of the Youtube UI.
-    var newPage
-    if (false) {
-        //DEPRECATED
-        //OLD VERSION NO LONGER SUPPORTED
-        if (getShuffleStatus()) {
-            newPage = dojo.query("ul[class~='shuffle-next-video'] li a")[0].href
+        var arg
+        if (funcs.use == "class") {
+            arg = this.button.get("class")
+        }
+        else if (funcs.use == "style") {
+            arg = window.getComputedStyle(this.button)
         }
         else {
-            newPage = dojo.query("ul[class~='serial-next-video'] li a")[0].href
+            arg = this.button
         }
-    }
-    else {
-        //New version
-        newPage = getNextVideoURL()
-    }
+        
+        return funcs[funcs.use].call(this, arg)
 
-    if (getAutoplay()) {
-        //Make sure autoplay is turned on -- we might be firing from the click of the Play Next button
-        newPage = newPage + "&playnext=1"
     }
-    if (getShuffleStatus()) {
-        newPage = newPage + "&shuffle=1"
-    }
+})
+YTAutoPlayButton = new Class({
+    Extends:YTButton,
+    initialize:function() {
+        this.parent($("quicklist-autoplay-button").getChildren("img")[0])
+        this.bp = "-50px -118px"
+    },
+})
+YTShuffleButton = new Class({
+    Extends:YTButton,
+    initialize:function() {
+        this.parent($("quicklist-shuffle-button").getChildren("img")[0])
+        this.bp = "-70px -118px"
 
-    location.href = newPage
-}
+    }
+})
+        
+YTQuicklist = new Class({
+    initialize:function() {
+        this.element = $("quicklist")
+        this.autoplay = new YTAutoPlayButton()
+        this.shuffle = new YTShuffleButton()
+    },
+    getShuffleID:function() {
+        //data-loaded-url contains the shuffle ID.
+        //The url is prefaced with "/list_ajax?", which we don't want
+        dataURL = this.element.get("data-loaded-url")
+        return dataURL.substring(dataURL.lastIndexOf("?")).parseQueryString().shuffle
+    },
+    shuffleEnabled:function() {
+        return this.shuffle.enabled()
+    },
+    autoplayEnabled:function() {
+        return this.autoplay.enabled()
+    },
+    
+    getNextVideo:function() {
+        return $$(".quicklist-item-playing").getNext("li")[0]
+    }
+})
+    
+AutoPlayer = new Class({
+    initialize:function() {
+        this.video = this.getVideo()
+        this.playNextButton = new PlayNextButton()
+        this.quicklist = new YTQuicklist()
+        this.queryString = window.location.search.substring(1).parseQueryString()
+        
+        //Can't use this.video.addEvent because Mootools doesn't like the event name "ended"
+        this.video.addEventListener("ended", this.handleVideoEnded.bind(this))
+    },
+    handleVideoEnded:function(e) {
+        
+        if (this.quicklist.autoplayEnabled()) {
+            this.nextVid = this.quicklist.getNextVideo()
+            this.nextURL = this.getNextURL()
+            
+            //Redirect to the next video
+            location.href = this.nextURL
+        }
+    },
+    getNextURL:function() {
+        //Assumes this.nextVid has already been defined
+        nextHref = this.nextVid.getChildren()[0].get("href")
+        params = nextHref.substring(nextHref.lastIndexOf("?")).parseQueryString()
+        nextURL = nextHref.substring(0, nextHref.lastIndexOf("?"))
+        console.log(params)
+        console.log(nextURL)
+        
+        params.playnext = 1
+        if (this.quicklist.shuffleEnabled()) {
+            params.shuffle = this.quicklist.getShuffleID()
+        }
+        
+        finalURL = nextURL + Object.toQueryString(params)
+        return finalURL.replace("\n", "")
+    },
+    getVideo:function() {
+        return $$("video")[0]
+    }
+})
+new AutoPlayer()
+
