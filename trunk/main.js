@@ -41,7 +41,7 @@ PlayNextButton = new Class({
     },
     getEnglishSupported:function(callback) {
         chrome.extension.sendRequest({
-            getLangs:["en-US", "en-GB"]
+            getLangs:["en-GB", "en-US"]
         }, function(resp) {
             if (resp.hasLang) {
                 callback.call(this)
@@ -69,45 +69,26 @@ PlayNextButton = new Class({
     }
 })
 YTButton = new Class({
-    initialize:function(button, param) {
-        //Button should be the actual element of the button
-        //param should be the name of the url parameter
-        this.button = button
-        this.param = window.location.search.substring(1).parseQueryString()[param]
-        
-        if (this.param != undefined && this.param.toInt()) {
-            this.enabled = true
-        }
-        else {
-            this.enabled = false
-        }
-        
-        this.button.addEvent("click", this.handleClick.bind(this))
+    initialize:function(name) {
+
+        this.name = name
     },
-    handleClick:function(e) {
-        if (this.enabled) {
-            this.enabled = false
-        }
-        else {
-            this.enabled = true
-        }
-    },
-    isEnabled:function(funcs) {
-        return this.enabled
+    isEnabled:function() {
+        console.log($("quicklist").hasClass(this.name + "-on"))
+        return $("quicklist").hasClass(this.name + "-on")
     }
 })
 YTAutoPlayButton = new Class({
     Extends:YTButton,
     initialize:function() {
-        this.parent($("quicklist-autoplay-button").getChildren("img")[0], "playnext")
-        this.bp = "-50px -118px"
+        this.parent("autoplay")
+
     },
 })
 YTShuffleButton = new Class({
     Extends:YTButton,
     initialize:function() {
-        this.parent($("quicklist-shuffle-button").getChildren("img")[0], "shuffle")
-        this.bp = "-70px -118px"
+        this.parent("shuffle")
 
     }
 })
@@ -166,7 +147,9 @@ AutoPlayer = new Class({
         console.log(params)
         console.log(nextURL)
         
-        params.playnext = 1
+        if (this.quicklist.autoplayEnabled()) {
+            params.playnext = 1
+        }
         if (this.quicklist.shuffleEnabled()) {
             params.shuffle = this.quicklist.getShuffleID()
         }

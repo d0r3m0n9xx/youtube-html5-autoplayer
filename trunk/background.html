@@ -9,14 +9,15 @@
                         sendResponse({
                             hasLang:true
                         })
+                        return
                     }
-                    else {
-                        sendResponse({
-                            hasLang:false
-                        })
-                    }
+
+                })
+                sendResponse({
+                    hasLang:false
                 })
             })
+        })
         </script>
     </head>
 </html>
