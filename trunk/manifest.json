@@ -1,6 +1,6 @@
 {
     "name": "Youtube HTML5 autoplayer",
-    "version":"4.0.1",
+    "version":"4.0",
     "description":"Enables autoplaying of playlists on Youtube with the HTML5 player",
     "content_scripts": [
         {
