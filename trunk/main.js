@@ -101,7 +101,12 @@ YTQuicklist = new Class({
     getShuffleID:function() {
         //data-loaded-url contains the shuffle ID.
         //The url is prefaced with "/list_ajax?", which we don't want
-        dataURL = this.element.get("data-loaded-ajax-url")
+        if (this.element.get("data-loaded-ajax-url")) {
+            dataURL = this.element.get("data-loaded-ajax-url")
+        }
+        else if (this.element.get("data-loaded-url")) {
+            dataURL = this.element.get("data-loaded-url")
+        }
         return dataURL.substring(dataURL.lastIndexOf("?")).parseQueryString().shuffle
     },
     shuffleEnabled:function() {

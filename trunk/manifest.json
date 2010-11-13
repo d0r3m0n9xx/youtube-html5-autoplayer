@@ -4,7 +4,10 @@
     "description":"Enables autoplaying of playlists on Youtube with the HTML5 player",
     "content_scripts": [
         {
-        "matches": ["http://www.youtube.com/watch?*p=*"],
+        "matches": [
+            "http://www.youtube.com/watch?*p=*",
+            "http://www.youtube.com/watch?*list=*"
+        ],
         "js": ["mootools-13.js", "mootools-13-more.js", "main.js"],
         "all_frames":true,
         "run_at":"document_end"
