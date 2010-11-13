@@ -74,6 +74,7 @@ YTButton = new Class({
         this.name = name
     },
     isEnabled:function() {
+        console.log($("quicklist").hasClass(this.name + "-on"))
         return $("quicklist").hasClass(this.name + "-on")
     }
 })
@@ -101,12 +102,7 @@ YTQuicklist = new Class({
     getShuffleID:function() {
         //data-loaded-url contains the shuffle ID.
         //The url is prefaced with "/list_ajax?", which we don't want
-        if (this.element.get("data-loaded-ajax-url")) {
-            dataURL = this.element.get("data-loaded-ajax-url")
-        }
-        else if (this.element.get("data-loaded-url")) {
-            dataURL = this.element.get("data-loaded-url")
-        }
+        dataURL = this.element.get("data-loaded-url")
         return dataURL.substring(dataURL.lastIndexOf("?")).parseQueryString().shuffle
     },
     shuffleEnabled:function() {
@@ -148,7 +144,8 @@ AutoPlayer = new Class({
         nextHref = this.nextVid.getChildren()[0].get("href")
         params = nextHref.substring(nextHref.lastIndexOf("?")).parseQueryString()
         nextURL = nextHref.substring(0, nextHref.lastIndexOf("?"))
-
+        console.log(params)
+        console.log(nextURL)
         
         if (this.quicklist.autoplayEnabled()) {
             params.playnext = 1
