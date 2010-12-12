@@ -1,0 +1,23 @@
+<html>
+    <head>
+        <script type="text/javascript" src="mootools-13.js"></script>
+        <script type="text/javascript">
+            chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
+                chrome.i18n.getAcceptLanguages(function(langs) {
+                    request.getLangs.each(function(lang) {
+                    if (langs.contains(lang)) {
+                        sendResponse({
+                            hasLang:true
+                        })
+                        return
+                    }
+
+                })
+                sendResponse({
+                    hasLang:false
+                })
+            })
+        })
+        </script>
+    </head>
+</html>
