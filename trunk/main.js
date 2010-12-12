@@ -53,7 +53,7 @@ PlayNextButton = new Class({
         this.button.set("src", "http://s.ytimg.com/yt/img/pixel-vfl73.gif")
         this.button.addClass("html5-icon")
         this.button.setStyles({
-            backgroundImage:"url(http://s.ytimg.com/yt/img/master-vflb9nbea.png)",
+            backgroundImage:"url(http://s.ytimg.com/yt/img/master-vfl171252.png)",
             backgroundPosition:"-48px -140px",
             width:10,
             height:20,
@@ -74,6 +74,7 @@ YTButton = new Class({
         this.name = name
     },
     isEnabled:function() {
+        console.log($("quicklist").hasClass(this.name + "-on"))
         return $("quicklist").hasClass(this.name + "-on")
     }
 })
@@ -101,12 +102,7 @@ YTQuicklist = new Class({
     getShuffleID:function() {
         //data-loaded-url contains the shuffle ID.
         //The url is prefaced with "/list_ajax?", which we don't want
-        if (this.element.get("data-loaded-ajax-url")) {
-            dataURL = this.element.get("data-loaded-ajax-url")
-        }
-        else if (this.element.get("data-loaded-url")) {
-            dataURL = this.element.get("data-loaded-url")
-        }
+        dataURL = this.element.get("data-loaded-url")
         return dataURL.substring(dataURL.lastIndexOf("?")).parseQueryString().shuffle
     },
     shuffleEnabled:function() {
@@ -148,7 +144,8 @@ AutoPlayer = new Class({
         nextHref = this.nextVid.getChildren()[0].get("href")
         params = nextHref.substring(nextHref.lastIndexOf("?")).parseQueryString()
         nextURL = nextHref.substring(0, nextHref.lastIndexOf("?"))
-
+        console.log(params)
+        console.log(nextURL)
         
         if (this.quicklist.autoplayEnabled()) {
             params.playnext = 1
