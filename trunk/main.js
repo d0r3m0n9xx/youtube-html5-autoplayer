@@ -53,7 +53,7 @@ PlayNextButton = new Class({
         this.button.set("src", "http://s.ytimg.com/yt/img/pixel-vfl73.gif")
         this.button.addClass("html5-icon")
         this.button.setStyles({
-            backgroundImage:"url(http://s.ytimg.com/yt/img/master-vfl171252.png)",
+            backgroundImage:"url(http://s.ytimg.com/yt/img/master-vflb9nbea.png)",
             backgroundPosition:"-48px -140px",
             width:10,
             height:20,
