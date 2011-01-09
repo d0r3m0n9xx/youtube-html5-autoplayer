@@ -146,6 +146,9 @@ AutoPlayer = new Class({
     getNextURL:function() {
         //Assumes this.nextVid has already been defined
         nextHref = this.nextVid.getChildren()[0].get("href")
+        //As of 4.0.4, it looks like YT does all the work for us
+        return nextHref
+        /*
         params = nextHref.substring(nextHref.lastIndexOf("?")).parseQueryString()
         nextURL = nextHref.substring(0, nextHref.lastIndexOf("?"))
 
@@ -158,7 +161,7 @@ AutoPlayer = new Class({
         }
         
         finalURL = nextURL + Object.toQueryString(params)
-        return finalURL.replace("\n", "")
+        return finalURL.replace("\n", "")*/
     },
     getVideo:function() {
         return $$("video")[0]
